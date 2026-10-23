@@ -2,7 +2,7 @@
 
 Free, open-source weather estimates in Apple Home through [Homebridge](https://homebridge.io/), maintained under the **Elias Witards** developer identity.
 
-> **Status: 0.5.0 release candidate, not yet published to npm.** This repository contains a working prototype prepared for wider testing. It is **not** an official Apple Home or Open-Meteo product.
+> Status: Version 0.5.0-rc.1 is published on npm as a public release candidate for testing. This is not yet a stable release. This repository contains a working prototype prepared for wider testing. It is **not** an official Apple Home or Open-Meteo product.
 
 ## What it adds to Apple Home
 
