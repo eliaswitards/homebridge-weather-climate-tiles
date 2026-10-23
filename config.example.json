@@ -1,0 +1,16 @@
+{
+  "platform": "OpenMeteoClimate",
+  "name": "My Location",
+  "latitude": 51.5,
+  "longitude": -0.12,
+  "refreshMinutes": 30,
+  "forecastHours": 3,
+  "windThresholdKmh": 40,
+  "frostThresholdC": 2,
+  "showWind": true,
+  "showSnow": true,
+  "showFrost": true,
+  "showConditionTiles": true,
+  "showExperimentalWindFan": true,
+  "showExperimentalWeatherFans": true
+}

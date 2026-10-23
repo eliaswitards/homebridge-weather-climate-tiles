@@ -1,0 +1,37 @@
+{
+  "name": "homebridge-openmeteo-climate",
+  "version": "0.5.0-rc.1",
+  "description": "Free, open-source Open-Meteo weather sensors and experimental Apple Home climate tiles for Homebridge",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0",
+    "homebridge": ">=2.0.0"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "open-meteo",
+    "weather"
+  ],
+  "license": "MIT",
+  "author": "Elias Witards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliaswitards/homebridge-weather-climate-tiles.git"
+  },
+  "homepage": "https://github.com/eliaswitards/homebridge-weather-climate-tiles#readme",
+  "bugs": {
+    "url": "https://github.com/eliaswitards/homebridge-weather-climate-tiles/issues"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check index.js && node --test"
+  },
+  "files": [
+    "index.js",
+    "config.schema.json",
+    "config.example.json",
+    "README.md",
+    "LICENSE"
+  ]
+}
