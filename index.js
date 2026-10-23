@@ -95,13 +95,52 @@ class WeatherPlatform {
   }
   configureAccessory(accessory) {this.accessories.set(accessory.UUID, accessory);}
   ensureAccessory(id, name, type) {
-    const uuid=this.api.hap.uuid.generate(`${PLUGIN}:${id}`);
-    let a=this.accessories.get(uuid);
-    if (!a) {a=new this.api.platformAccessory(name,uuid);this.api.registerPlatformAccessories(PLUGIN,PLATFORM,[a]);this.accessories.set(uuid,a);}
-    let svc=a.getService(type);
-    if(!svc) svc=a.addService(type,name);
-    svc.setCharacteristic(this.Characteristic.Name,name);
-    return {a,svc};
+    const uuid = this.api.hap.uuid.generate(`${PLUGIN}:${id}`);
+    let a = this.accessories.get(uuid);
+    let changed = !a;
+
+    if (!a) {
+      a = new this.api.platformAccessory(name, uuid);
+      this.api.registerPlatformAccessories(PLUGIN, PLATFORM, [a]);
+      this.accessories.set(uuid, a);
+    }
+
+    let svc = a.getService(type);
+    if (!svc) {
+      svc = a.addService(type, name);
+      changed = true;
+    }
+
+    if (a.displayName !== name) {
+      a.displayName = name;
+      changed = true;
+    }
+
+    const info = a.getService(this.Service.AccessoryInformation);
+    if (info) {
+      const infoName = info.getCharacteristic(this.Characteristic.Name);
+      if (infoName.value !== name) {
+        info.setCharacteristic(this.Characteristic.Name, name);
+        changed = true;
+      }
+    }
+
+    if (svc.displayName !== name) {
+      svc.displayName = name;
+      changed = true;
+    }
+
+    const serviceName = svc.getCharacteristic(this.Characteristic.Name);
+    if (serviceName.value !== name) {
+      svc.setCharacteristic(this.Characteristic.Name, name);
+      changed = true;
+    }
+
+    if (changed) {
+      this.api.updatePlatformAccessories([a]);
+    }
+
+    return {a, svc};
   }
   makeSensors() {
     const label=String(this.config.name || 'Outdoor').trim() || 'Outdoor';
@@ -133,7 +172,7 @@ class WeatherPlatform {
     // For testing, 1 percentage point represents 1 mph (rounded, capped at 100).
     // This is a display workaround, not a controllable fan or real HomeKit mph value.
     if(this.config.showExperimentalWindFan!==false) {
-      const fan=this.ensureAccessory('wind-speed-fan', 'Wind Speed (1% = 1 mph)', this.Service.Fanv2);
+      const fan=this.ensureAccessory('wind-speed-fan', 'Wind Speed', this.Service.Fanv2);
       const denyWrite=()=>{throw new this.api.hap.HapStatusError(this.api.hap.HAPStatus.READ_ONLY_CHARACTERISTIC);};
       fan.svc.getCharacteristic(this.Characteristic.Active)
         .onGet(()=>this.conditionState.wind ? this.Characteristic.Active.ACTIVE : this.Characteristic.Active.INACTIVE)
@@ -147,7 +186,7 @@ class WeatherPlatform {
     // Rain: 1% = 0.1 mm/hour; Snow: 1% = 0.1 cm/hour;
     // Ice risk: categorical heuristic 0,25,50,75,100 (NOT a probability).
     if(this.config.showExperimentalWeatherFans!==false) {
-      const labels={rain:'Rainfall (1%=0.1mm/h)',snow:'Snowfall (1%=0.1cm/h)',ice:'Ice / Frost Risk (level)'};
+      const labels={rain:'Rainfall',snow:'Snowfall',ice:'Ice and Frost Risk'};
       for(const id of ['rain','snow','ice']) {
         const fan=this.ensureAccessory(`${id}-weather-fan`,labels[id],this.Service.Fanv2);
         const deny=()=>{throw new this.api.hap.HapStatusError(this.api.hap.HAPStatus.READ_ONLY_CHARACTERISTIC);};

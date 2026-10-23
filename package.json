@@ -1,6 +1,6 @@
 {
   "name": "homebridge-openmeteo-climate",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "description": "Free, open-source Open-Meteo weather sensors and experimental Apple Home climate tiles for Homebridge",
   "main": "index.js",
   "engines": {

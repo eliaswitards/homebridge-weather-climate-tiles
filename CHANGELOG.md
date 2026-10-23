@@ -1,3 +1,17 @@
+## 0.5.0-rc.2 — 23 October 2026
+
+### Fixed
+- Corrected invalid HomeKit accessory and service names for wind speed, rainfall, snowfall and ice/frost risk.
+- Added automatic migration of previously cached accessory names.
+- Preserved existing accessory UUIDs during name migration.
+- Reduced unnecessary accessory-cache updates by saving changes only when required.
+
+### Verification
+- All six automated weather tests passed.
+- Successfully tested with Homebridge 2.4.0.
+- Verified restoration of 12 cached accessories.
+- Verified migration from older accessory names and a warning-free restart.
+
 # Changelog
 
 ## 0.5.0-rc.1 (unpublished release candidate)
