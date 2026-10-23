@@ -1,8 +1,9 @@
+
 # Homebridge Open-Meteo Climate
 
 Free, open-source weather estimates in Apple Home through [Homebridge](https://homebridge.io/), maintained under the **Elias Witards** developer identity.
 
-> Status: Version 0.5.0-rc.1 is published on npm as a public release candidate for testing. This is not yet a stable release. This repository contains a working prototype prepared for wider testing. It is **not** an official Apple Home or Open-Meteo product.
+> **Status:** Version 0.5.0-rc.2 is publicly available on npm as a release candidate for testing. It has passed automated tests and isolated Homebridge compatibility testing, including migration from older accessory names. It is not yet a stable release. This project is **not** an official Apple Home or Open-Meteo product.
 
 ## What it adds to Apple Home
 
@@ -16,9 +17,11 @@ Free, open-source weather estimates in Apple Home through [Homebridge](https://h
 | Wind Speed | 1% = 1 mph | Modelled current wind speed, rounded, capped at 100 mph |
 | Rainfall | 10% = 1 mm/hour | Modelled rain-rate equivalent, capped at 10 mm/hour |
 | Snowfall | 10% = 1 cm/hour | Modelled snowfall-rate equivalent, capped at 10 cm/hour |
-| Ice / Frost Risk | 0, 25, 50, 75 or 100% | **Categorical heuristic only; not a probability** |
+| Ice and Frost Risk | 0, 25, 50, 75 or 100% | **Categorical heuristic only; not a probability** |
 
-**Important:** Apple Home calls these accessories *fans*, but they are **not real fans** and cannot be controlled. Attempts to change their values in Home may produce an error. Percentages are a display workaround, not native weather measurements. Wind warning status uses modelled gusts when available; the wind-speed tile uses modelled wind speed.
+**Important:** Apple Home calls these accessories *fans*, but they are **not real fans** and cannot be controlled. Attempts to change their values in Home may produce an error.
+
+Percentages are a display workaround, not native weather measurements. Wind warning status uses modelled gusts when available; the wind-speed tile uses modelled wind speed.
 
 ## Requirements
 
@@ -27,11 +30,33 @@ Free, open-source weather estimates in Apple Home through [Homebridge](https://h
 - Internet access to `api.open-meteo.com`.
 - A location's latitude and longitude.
 
-## Installation (after public npm release)
+## Installation
 
-Install `homebridge-openmeteo-climate` using the Homebridge UI plugin search. Configure your location using the plugin settings, save, then restart the plugin's bridge as directed by Homebridge. **This release candidate is not published yet.**
+The plugin is publicly available on npm:
 
-For developers testing a local checkout, run `npm test` and `npm install -g /path/to/homebridge-openmeteo-climate` on a *test* Homebridge installation. Do not replace a working installation without a backup.
+**Package:** `homebridge-openmeteo-climate`
+
+**Current release candidate:** `0.5.0-rc.2`
+
+This is a pre-release intended for testing. Further testing is recommended before production use.
+
+The npm `next` tag currently points to `0.5.0-rc.2`, while the `latest` tag points to the older `0.5.0-rc.1` release candidate.
+
+### Install the release candidate
+
+On an isolated test Homebridge installation, install the specific version:
+
+```bash
+npm install homebridge-openmeteo-climate@0.5.0-rc.2
+```
+
+Alternatively, use your test Homebridge installation's plugin management interface if it supports selecting the specific pre-release version.
+
+Configure your location using the plugin settings or the example configuration below.
+
+**Important:** Back up your existing Homebridge configuration and accessory data before upgrading an installation already connected to Apple Home.
+
+For developers testing a local checkout, run `npm test` before installation.
 
 ## Example configuration
 
@@ -56,17 +81,47 @@ Use the Homebridge UI settings or add a platform entry to your Homebridge `confi
 }
 ```
 
-**The coordinates above are illustrative only.** Replace them with your own location. Do not paste private Homebridge `config.json` files into public bug reports: they may contain credentials for unrelated plugins.
+**The coordinates above are illustrative only.** Replace them with your own location.
+
+Do not paste private Homebridge `config.json` files into public bug reports: they may contain credentials for unrelated plugins.
 
 ## How readings are calculated
 
-The plugin requests Open-Meteo current, hourly and (when available) 15-minute forecast data. It refreshes every 30 minutes by default (configurable between 15 and 180 minutes). Rain and snowfall tiles convert a 15-minute model amount into an *hourly-equivalent* rate by multiplying by four; otherwise they fall back to hourly/current values. Forecast updates can lag local weather, and values are not direct observations.
+The plugin requests Open-Meteo current, hourly and (when available) 15-minute forecast data.
 
-Wind alerts use current gusts when available or hourly forecast gusts above the configured threshold. Snow and frost indicators include a configurable future window. Ice-risk levels are rough rules based on forecast temperature, precipitation and freezing-precipitation codes. They are **not measured ice, road condition reports, calibrated risk percentages, or safety alerts**.
+It refreshes every 30 minutes by default (configurable between 15 and 180 minutes).
+
+Rain and snowfall tiles convert a 15-minute model amount into an *hourly-equivalent* rate by multiplying by four; otherwise they fall back to hourly/current values.
+
+Forecast updates can lag local weather, and values are not direct observations.
+
+Wind alerts use current gusts when available or hourly forecast gusts above the configured threshold.
+
+Snow and frost indicators include a configurable future window.
+
+Ice-risk levels are rough rules based on forecast temperature, precipitation and freezing-precipitation codes. They are **not measured ice, road condition reports, calibrated risk percentages, or safety alerts**.
+
+## Accessory compatibility and upgrades
+
+Version 0.5.0-rc.2 corrects HomeKit accessory naming issues affecting the wind speed, rainfall, snowfall and ice/frost risk tiles.
+
+When upgrading from an older release candidate, the plugin automatically updates previously cached accessory names while preserving their existing accessory UUIDs.
+
+The migration has been tested against an isolated Homebridge 2.4.0 installation containing 12 cached accessories.
+
+After migration, a clean restart completed without HomeKit accessory naming warnings.
+
+Although accessory identifiers are preserved, users should still back up their Homebridge installation before upgrading.
 
 ## Privacy and API use
 
-The plugin sends the configured latitude and longitude to the Open-Meteo forecast API over HTTPS to obtain weather data. It does not require an Open-Meteo API key in eligible non-commercial use. Review [Open-Meteo's terms](https://open-meteo.com/en/terms) before use, especially for commercial projects. This project is not affiliated with Open-Meteo.
+The plugin sends the configured latitude and longitude to the Open-Meteo forecast API over HTTPS to obtain weather data.
+
+It does not require an Open-Meteo API key in eligible non-commercial use.
+
+Review [Open-Meteo's terms](https://open-meteo.com/en/terms) before use, especially for commercial projects.
+
+This project is not affiliated with Open-Meteo.
 
 Weather data provided by [Open-Meteo](https://open-meteo.com/). Please follow any attribution requirements applicable to your use and selected data sources.
 
@@ -78,12 +133,53 @@ Weather data provided by [Open-Meteo](https://open-meteo.com/). Please follow an
 - Some HomeKit versions may show a warning when a user attempts to operate the simulated fans or switches.
 - This project has only had limited private real-world testing so far; more testing is needed before a stable 1.0 release.
 
+## Testing
+
+Version 0.5.0-rc.2 has completed the following checks:
+
+- Six automated weather-processing tests passed.
+- Successful isolated startup with Homebridge 2.4.0.
+- Successful restoration of 12 cached accessories.
+- Automatic migration of four previously invalid accessory names.
+- Successful restart after migration without accessory naming warnings.
+- Successful publication and registry verification on npm.
+
+These checks do not guarantee compatibility with every Homebridge configuration or Apple Home version.
+
 ## Support and contributions
 
-Please use [GitHub Issues](https://github.com/eliaswitards/homebridge-weather-climate-tiles/issues) for reproducible bugs, and include your Homebridge and Node versions (but **never credentials**). Contributions and improvements are welcome under the MIT licence.
+Please use [GitHub Issues](https://github.com/eliaswitards/homebridge-weather-climate-tiles/issues) for reproducible bugs.
 
-**Free to use. Donations welcome** — an optional support link will be added later. Donations do not buy additional features or support commitments.
+Include your Homebridge and Node.js versions, relevant error messages and steps to reproduce the problem.
+
+**Never include passwords, access tokens, private configuration files or other credentials.**
+
+Contributions and improvements are welcome under the MIT licence.
+
+### Support development
+
+**Free to use. Donations welcome.**
+
+If you find the plugin useful, you can optionally support its continued development:
+
+[Support Elias Witards on Ko-fi](https://ko-fi.com/eliaswitards)
+
+Donations are entirely voluntary. All plugin features remain free, and donations do not purchase additional features or support commitments.
+
+## Links
+
+- [GitHub repository](https://github.com/eliaswitards/homebridge-weather-climate-tiles)
+- [npm package](https://www.npmjs.com/package/homebridge-openmeteo-climate)
+- [Releases](https://github.com/eliaswitards/homebridge-weather-climate-tiles/releases)
+- [Report an issue](https://github.com/eliaswitards/homebridge-weather-climate-tiles/issues)
+- [Optional donations](https://ko-fi.com/eliaswitards)
 
 ## Licence
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+Developed and maintained by **Elias Witards**.
+
+Free, open-source smart-home software.
